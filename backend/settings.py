@@ -15,19 +15,28 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTIFICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
 
 # Application definition
 
 INSTALLED_APPS = [
-    # 3rd application
     'jazzmin',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # 3rd application
+    'rest_framework',
+    'djoser',
+    'rest_framework.authtoken',
+
 ]
 
 MIDDLEWARE = [
@@ -112,4 +121,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Fashion Admin",
+    "site_header": "Fashion",
+    "site_brand": "Fashion",
+}
 

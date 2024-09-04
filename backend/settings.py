@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -13,10 +14,10 @@ SECRET_KEY = 'django-insecure-r*h7byb3-+!*7nf9(hgk@x_bc1gwq83et)kj_y_i86_-q@jenf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "192.168.1.15", "127.0.0.1"]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTIFICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
     )
 }
@@ -36,6 +37,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
     'rest_framework.authtoken',
+    
+    # application
+    'core',
 
 ]
 
@@ -128,3 +132,11 @@ JAZZMIN_SETTINGS = {
     "site_brand": "Fashion",
 }
 
+# SIMPLE_JWT = {
+#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+#     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+#     'ROTATE_REFRESH_TOKEN': False,
+#     'BLACKLIST_ATER_ROTATE': False,
+#     'AUTH_HEADER_TYPES': ('Bearer', ),
+#     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',)
+# }

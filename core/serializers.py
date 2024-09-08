@@ -1,32 +1,19 @@
 from rest_framework import serializers
-from . import models
+from .models import Category, Brand, Product
 
-class CaterogySerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        models = models.Category
+        model = Category
         fields = ('id', 'title', 'imageUrl')
 
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
-        models = models.Category
+        model = Brand
         fields = ('id', 'title', 'imageUrl')
         
+from .models import Brand, Category, Product
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
-        models = models.Product
-        fields = (
-            'id', 
-            'title', 
-            'description', 
-            'price', 
-            'is_featured',  
-            'clothesType',
-            'ratting',
-            'caterogy',
-            'brand',
-            'colors',
-            'sizes',
-            'imageUrl', 
-            'created_at',
-            )
-        
+        model = Product  # Use the imported Product model
+        fields = '__all__'

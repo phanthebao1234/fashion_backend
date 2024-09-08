@@ -7,11 +7,11 @@ import random
 
 class CaterogyList(generics.ListAPIView): 
     # ListAPIView: hiển thị danh sách đối tượng
-    serializer_class = serializers.CaterogySerializer
+    serializer_class = serializers.CategorySerializer
     queryset = models.Category.objects.all()
     
 class HomeCaterogyList(generics.ListAPIView):
-    serializer_class = serializers.CaterogySerializer
+    serializer_class = serializers.CategorySerializer
     
     def get_queryset(self):
         # Lấy tất cả các đối tượng Category từ cơ sở dữ liệu.
@@ -65,7 +65,7 @@ class PopularProductList(generics.ListAPIView):
     
     def get_queryset(self):
         # Lấy tất cả các đối tượng Product từ cơ sở dữ liệu.
-       queryset = models.Product.objects.filter(ratting__gte=4.0, ratting__lte=5.0)
+       queryset = models.Product.objects.filter(ratings__gte=4.0, ratings__lte=5.0)
        
         # Thêm một trường chú thích random_order vào mỗi đối tượng trong queryset, 
         # giá trị của trường này là số lượng id.    
@@ -80,12 +80,12 @@ class PopularProductList(generics.ListAPIView):
         # Trả về 20 phần tử đầu tiên của danh sách queryset đã được trộn ngẫu nhiên.
        return queryset[:20]
    
-class PopularProductListByClothesType(generics.ListAPIView): 
+class PopularProductListByClothesType(APIView): 
     # ListAPIView: hiển thị danh sách đối tượng
     serializer_class = serializers.ProductSerializer
     queryset = models.Product.objects.all()
     
-    def get_queryset(self, request):
+    def get(self, request):
         query = request.query_params.get('clothesType', None)
 
         if query:
@@ -123,7 +123,7 @@ class SearchProductByTitle(APIView):
         query = request.query_params.get('q', None)
         
         if query:
-            products = models.Product.objects.filter(title_icontains=query)
+            products = models.Product.objects.filter(title__icontains=query)
             
             serializer = serializers.ProductSerializer(products, many=True)
             return Response(serializer.data)

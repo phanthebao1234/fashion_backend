@@ -9,8 +9,8 @@ class Cart(models.Model):
     quantity = models.IntegerField(default=1)
     size = models.CharField(max_length=100, blank=False)
     color = models.CharField(max_length=100, blank=False) 
-    created_at = models.DateTimeField(auto_now_add=True, default=timezone.now)
     created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
     
     def __str__(self) -> str:  # sourcery skip: use-fstring-for-formatting
         return '{}/{}'.format(self.userId.username, self.product.title)

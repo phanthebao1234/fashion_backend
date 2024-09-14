@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-r*h7byb3-+!*7nf9(hgk@x_bc1gwq83et)kj_y_i86_-q@jenf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "192.168.1.5", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "192.168.1.17", "127.0.0.1"]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     # application
     'core',
     'wishlist',
+    'cart',
 
 ]
 

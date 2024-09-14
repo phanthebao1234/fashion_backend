@@ -19,7 +19,7 @@ class ToggleWishList(APIView):
         user_id = request.user.id
         product_id = request.query_params.get('id')
 
-        if not user_id or product_id:
+        if not user_id or not product_id:
             return Response({'message': 'Invalid Request a user id and product id is required'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:

@@ -8,7 +8,7 @@ from rest_framework import status, generics
 from rest_framework.response import Response
 
 class AddItemToCart(APIView):
-    permission_classes = ['IsAuthenticated']
+    permission_classes = [IsAuthenticated]
     
     def post(self, request, *args, **kwargs):
         user = request.user
@@ -62,7 +62,7 @@ class CartCount(APIView):
     
     def get(self, request):
         user = request.user
-        cart_count = Cart.object.filter(userId = user).count()
+        cart_count = Cart.objects.filter(userId = user).count()
         return Response({'cart_count': cart_count}, status=status.HTTP_200_OK)
     
 class UpdateCartItemQuantity(APIView):

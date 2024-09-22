@@ -20,6 +20,7 @@ class AddItemToCart(APIView):
             return Response({'message': 'Product not found'}, status=status.HTTP_404_NOT_FOUND) 
         
         try:
+            # check cart nếu trùng product id, color và size thì sẽ tăng quantity của cart 
             cart_item = Cart.objects.get(
                 userId = user,
                 product = product ,
@@ -27,10 +28,12 @@ class AddItemToCart(APIView):
                 size = data['size']
             )
             
-            cart_item += data.get('quantity', 1)
+            cart_item.quantity += data.get('quantity', 1)
             cart_item.save()
-            
+            # sau đó return về message
             return Response({'message': 'Item updated to the cart'}, status = status.HTTP_200_OK)
+        
+            # nếu đó là product id không có trong cart hoặc có các size và color khác với sản phẩm trùng product id thì sẽ tạo 1 cart mới
         except Cart.DoesNotExist:
             newCart = Cart.objects.create(
                 userId = user,
@@ -69,8 +72,9 @@ class UpdateCartItemQuantity(APIView):
     permission_classes = [IsAuthenticated]
     
     def patch(self, request):
-        item_id = request.query_param.get('id')
-        count = request.query_param.get('count')
+        item_id = request.query_params.get('id')
+        count = request.query_params.get('count')
+        print(count)
         
         cart_item = get_object_or_404(Cart, id=item_id)
         cart_item.quantity = count

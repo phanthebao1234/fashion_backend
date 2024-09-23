@@ -11,8 +11,9 @@ class Address(models.Model):
         (OFFICE, 'office'),
         (SCHOOL, 'school'),
     )
-    lat = models.FloatField()
-    lng = models.FloatField()
+    
+    lat = models.FloatField(default=0.0)
+    lng = models.FloatField(default=0.0)
     isDefault = models.BooleanField(default=False)
     address = models.CharField(max_length=255, blank=False)
     phone = models.CharField(max_length=255, blank=False)    
@@ -20,7 +21,7 @@ class Address(models.Model):
     addressType = models.CharField(choices=ADDRESSTYPES, max_length=10, default=HOME)
     
     def __str__(self):
-        return f'{self.userId.username}/{self.addressType}'
+        return f'{self.userId.username}/{self.addressType}/{self.address}'
     
 class Extras(models.Model):
     isVerified = models.BooleanField(default=False)

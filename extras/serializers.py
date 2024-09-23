@@ -3,10 +3,10 @@ from . import models
 
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
-        models = models.Address
+        model = models.Address
         fields = '__all__'
         
 class ExtrasSerializer(serializers.ModelSerializer):
     class Meta:
-        models = models.Extras
+        model = models.Extras
         fields = '__all__'

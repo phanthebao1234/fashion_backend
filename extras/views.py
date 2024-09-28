@@ -27,7 +27,7 @@ class AddAdress(APIView):
             models.Address.objects.filter(userId = request.user).update(isDefault = False)
             
         user_address.save()
-        return Response(status=status.HTTP_201_CREATED)
+        return Response({'message': 'Address updated successfully.'},status=status.HTTP_201_CREATED)
     
 class GetUserAddress(APIView):
     permission_classes = [IsAuthenticated]
@@ -65,7 +65,7 @@ class DeleteAddress(APIView):
 
         # nếu không có id => No id provided
         if not address_id:
-            return Response({'message': 'No id provided'})
+            return Response({'message': 'No id provided'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             # lấy thông tin người dùng
@@ -73,24 +73,30 @@ class DeleteAddress(APIView):
 
             # tìm địa chỉ với id và userId tương ứng
             address_item = models.Address.objects.get(id=address_id, userId=user)
-
+            print(address_item)
             # bắt đầu giao dịch để đảm bảo tính toàn vẹn dữ liệu
             with transaction.atomic():
-                # nếu địa chỉ là mặc định thì gọi phương thức _extracted_from_delete_ để xử lý
                 if address_item.isDefault:
-                    return self._extracted_from_delete_(user, address_id, address_item)
-        # nếu không có địa chỉ => Address not foud
+                    print('run here')
+                    return self._extracted_from_delete_(address_id=address_id, address_item=address_item)
+                address_item.delete()
+                return Response({'message': 'Address deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except models.Address.DoesNotExist:
             return Response({'message': 'Address not found'}, status=status.HTTP_400_BAD_REQUEST) 
-
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     #  phương thức này được gọi khi xóa địa chỉ mặc định
-    def _extracted_from_delete_(self, user, address_id, address_item):
+    def _extracted_from_delete_(self, address_id, address_item):
+        print(address_id) # id = 3
+        print(address_item)
         # lấy tất cả address của user ngoại trừ địa chỉ đang xóa là address_id nhận được ở trên
-        ortherAddress = models.Address.objects.filter(userId=user).exclude(id=address_id)
-        
+        ortherAddress = models.Address.objects.filter(userId=self).exclude(
+            id=address_id
+        )
+
         # nếu không có địa chỉ nào khác thì => không thể xóa địa chỉ mặc định khi không có các địa chỉ khác
         if not ortherAddress.exists:
-            return Response({'message': 'You can not delete a default address without any other address'})
+            return Response({'message': 'You can not delete a default address without any other address'}, status=status.HTTP_400_BAD_REQUEST)
 
         # lấy địa chỉ khác ở vị trí đầu tiên 
         new_default_address = ortherAddress.first()
@@ -99,10 +105,11 @@ class DeleteAddress(APIView):
         # lưu vào csdl địa chỉ mặc định mới
         new_default_address.save()
         # xóa địa chỉ cũ
-        address_item.delete()
-        
+        print(address_item)
+        # address_item.delete()
+
         # trả về phản hồi thành công
-        return Response(status=status.HTTP_200_OK) 
+        return Response({'message': 'Address deleted successfully'}, status=status.HTTP_204_NO_CONTENT) 
     
 class SetDefaultAddress(APIView):
     permission_classes = [IsAuthenticated]

@@ -50,4 +50,22 @@ class AddOrder(APIView):
                     delivery_status = data['delivery_status'],
                     payment_status = data['payment_status'],
                 )
-        except:
+                
+                # create notification
+                title = "Order Successfully Placed"
+                message = "Your payment has been successfully and your order has been successfully placed"
+                
+                Notification.objects.create(orderId=order , title=title, message=message, userId = request.user)
+                
+                order.save()
+                
+                return Response({"id": order.id}, status = status.HTTP_201_CREATED)
+            
+        except Product.DoesNotExist:
+            return Response({"message": "one or more product not found"}, status = status.HTTP_404_NOT_FOUND)
+        
+        except Address.DoesNotExist:
+            return Response({"message": "user address does not exist"}, status = status.HTTP_404_NOT_FOUND)
+        
+        except KeyError as e:
+            return Response({"message": f"Missing key: {str(e)}"}, status = status.HTTP_400_BAD_REQUEST)

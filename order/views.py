@@ -125,4 +125,30 @@ class UserOrdersByStatus(APIView):
         # Cuối cùng, đoạn này trả về dữ liệu đã được tuần tự hóa dưới dạng phản hồi JSON với mã trạng thái HTTP 200 (OK).
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class OrderDetail(APIView):
+    """Định nghĩa một APIView trong django để lấy chi tiết danh sách order
+
+    Args:
+        APIView (order): đơn hàng chi tiết
+
+    Returns:
+        data: {}
+    """
+    # Điều này đảm bảo rằng chỉ những người dùng đã xác thực mới có thể truy cập view này.
+    permission_classes = [IsAuthenticated]
+    
+    # Phương thức này xử lý các yêu cầu GET để lấy danh sách các đơn hàng của người dùng theo trạng thái.
+    def get(self, request):
+        # id order được lấy từ tham số truy vấn của yêu cầu và lưu vào order_id
+        order_id = request.query_params.get('order_id')
         
+        # sử dụng get_object_or_404 để lấy ra Order có id = order_id nếu không có là về lỗi 404
+        order_detail = get_object_or_404(models.Order, id=order_id)
+        
+        # tuần tự hóa dữ liệu
+        # Đoạn này khởi tạo OrderSerializer với đối tượng đơn hàng đã được lấy. 
+        # Việc tuần tự hóa này chuyển đổi đối tượng đơn hàng thành định dạng JSON.
+        serializer = serializers.OrderSerializer(order_detail)
+        
+        # Trả về dữ liệu đã tuần tự hóa dưới dạng phản hồi JSON với mã trạng thái 200
+        return Response(serializer.data, status=status.HTTP_200_OK)

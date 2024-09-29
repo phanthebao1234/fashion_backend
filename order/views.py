@@ -92,3 +92,37 @@ class AddOrder(APIView):
             # Nếu thiếu bất kỳ khóa nào cần thiết từ dữ liệu yêu cầu, 
             # một phản hồi 400 sẽ được trả về với thông tin về khóa bị thiếu.
             return Response({"message": f"Missing key: {str(e)}"}, status = status.HTTP_400_BAD_REQUEST) 
+        
+class UserOrdersByStatus(APIView):
+    """ Định nghĩa một API view trong Django để lấy danh sách order theo trạng thái.
+
+    Args:
+        APIView (none): none
+
+    Returns:
+        order: list order
+    """
+    
+    # Điều này đảm bảo rằng chỉ những người dùng đã xác thực mới có thể truy cập view này.
+    permission_classes = [IsAuthenticated]
+    
+    # Phương thức này xử lý các yêu cầu GET để lấy danh sách các đơn hàng của người dùng theo trạng thái.
+    def get(self, request):
+        # Trạng thái đơn hàng được lấy từ các tham số truy vấn của yêu cầu và lưu trữ trong biến order_status.
+        order_status = request.query_params.get['status']
+        
+        # lấy thông tin người dùng
+        user =request.user
+        
+        # truy vấn models Order lọc ra đối order có delivery_status = order_status và sắp xếp ngày tạo theo thự tự giảm dần
+        orders = models.Order.objects.filter(user=user, delivery_status=order_status).order_by("-created_at")
+        
+        # tuần tự hóa dữ liệu
+        # Đoạn này khởi tạo OrderSerializer với các đơn hàng đã được lọc. 
+        # Tham số many=True cho biết rằng có nhiều đối tượng đơn hàng đang được tuần tự hóa.
+        serializer = serializers.OrderSerializer(orders, many = True)
+        
+        # Cuối cùng, đoạn này trả về dữ liệu đã được tuần tự hóa dưới dạng phản hồi JSON với mã trạng thái HTTP 200 (OK).
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        

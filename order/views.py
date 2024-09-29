@@ -109,7 +109,7 @@ class UserOrdersByStatus(APIView):
     # Phương thức này xử lý các yêu cầu GET để lấy danh sách các đơn hàng của người dùng theo trạng thái.
     def get(self, request):
         # Trạng thái đơn hàng được lấy từ các tham số truy vấn của yêu cầu và lưu trữ trong biến order_status.
-        order_status = request.query_params.get['status']
+        order_status = request.query_params.get('status')
         
         # lấy thông tin người dùng
         user =request.user

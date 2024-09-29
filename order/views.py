@@ -13,18 +13,32 @@ from notification.models import Notification
 from django.db import transaction
 
 class AddOrder(APIView):
+    """Định nghĩa 1 APIVIEW để tạo 1 đơn hàng và yêu cầu người dùng xác thực để truy cập endpoint này.
+
+    Returns:
+        id: order id
+    """
+    # đảm bảo rằng chỉ những người dùng đã xác thực mới có thể truy cập view này.
     permission_classes = [IsAuthenticated]
     
+    # Phương thức này xử lý các yêu cầu POST để tạo một đơn hàng mới.
     def post(self, request):
+        
+        # Dữ liệu từ yêu cầu được trích xuất và lưu trữ trong biến data.
         data = request.data
         
         try:
+            # Điều này đảm bảo rằng tất cả các thao tác cơ sở dữ liệu trong khối này là nguyên tử, 
+            # nghĩa là chúng hoặc tất cả thành công hoặc tất cả thất bại.
             with transaction.atomic():
+                # Mỗi sản phẩm trong đơn hàng được xác thực bằng cách kiểm tra xem nó có tồn tại trong cơ sở dữ liệu hay không. 
+                # Nếu không tìm thấy sản phẩm, một lỗi 404 sẽ được trả về.
                 validated_products = []
                 
                 for product_data in data['order_products']:
                     product = get_object_or_404(Product, id=product_data['product'])
-                    
+                
+                # Chi tiết sản phẩm đã xác thực được thêm vào danh sách validated_products.
                 validated_products.append(
                     {
                         "product_id": product.id,
@@ -37,7 +51,10 @@ class AddOrder(APIView):
                     }
                 )
                 
+                # Địa chỉ được xác thực bằng cách kiểm tra xem nó có tồn tại trong cơ sở dữ liệu hay không.
                 address = get_object_or_404(Address, id = int(data['address']))
+                
+                # Một đơn hàng mới được tạo với dữ liệu đã xác thực.
                 order = models.Order.objects.create(
                     user = request.user,
                     customer_id = data['customer_id'],
@@ -51,21 +68,27 @@ class AddOrder(APIView):
                     payment_status = data['payment_status'],
                 )
                 
-                # create notification
+                # create notification 
+                # Một thông báo được tạo để thông báo cho người dùng rằng đơn hàng của họ đã được đặt thành công.
                 title = "Order Successfully Placed"
                 message = "Your payment has been successfully and your order has been successfully placed"
-                
                 Notification.objects.create(orderId=order , title=title, message=message, userId = request.user)
                 
+                # Lưu đơn hàng và csdl
                 order.save()
                 
+                # Một phản hồi được trả về với ID của đơn hàng và trạng thái 201 (Đã tạo).
                 return Response({"id": order.id}, status = status.HTTP_201_CREATED)
             
         except Product.DoesNotExist:
+            # Nếu không tìm thấy bất kỳ sản phẩm nào, một phản hồi 404 sẽ được trả về.
             return Response({"message": "one or more product not found"}, status = status.HTTP_404_NOT_FOUND)
         
         except Address.DoesNotExist:
+            # Nếu không tìm thấy địa chỉ, một phản hồi 404 sẽ được trả về.
             return Response({"message": "user address does not exist"}, status = status.HTTP_404_NOT_FOUND)
         
         except KeyError as e:
-            return Response({"message": f"Missing key: {str(e)}"}, status = status.HTTP_400_BAD_REQUEST)
+            # Nếu thiếu bất kỳ khóa nào cần thiết từ dữ liệu yêu cầu, 
+            # một phản hồi 400 sẽ được trả về với thông tin về khóa bị thiếu.
+            return Response({"message": f"Missing key: {str(e)}"}, status = status.HTTP_400_BAD_REQUEST) 

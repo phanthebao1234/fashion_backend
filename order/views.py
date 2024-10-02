@@ -39,18 +39,18 @@ class AddOrder(APIView):
                     product = get_object_or_404(Product, id=product_data['product'])
                 
                 # Chi tiết sản phẩm đã xác thực được thêm vào danh sách validated_products.
-                    validated_products.append(
-                        {
-                            "product_id": product.id,
-                            "imageUrls": product.imageUrls[0],
-                            "title": product.title,
-                            "price": product.price,
-                            "quantity": product_data["quantity"],
-                            "size": product_data["size"],
-                            "color": product_data["color"]
-                        }
-                    )
-                    print(validated_products)
+                validated_products.append(
+                    {
+                        "product_id": product.id,
+                        "imageUrl": product.imageUrl[0],
+                        "title": product.title,
+                        "pirce": product.pirce,
+                        "quantity": product_data["quantity"],
+                        "size": product_data["size"],
+                        "color": product_data["color"]
+                    }
+                )
+                
                 # Địa chỉ được xác thực bằng cách kiểm tra xem nó có tồn tại trong cơ sở dữ liệu hay không.
                 address = get_object_or_404(Address, id = int(data['address']))
                 

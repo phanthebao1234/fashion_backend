@@ -28,9 +28,9 @@ class Order(models.Model):
     subtotal = models.FloatField()
     total = models.FloatField()
     delivery_status = models.CharField(max_length=255, choices=ORDERSTATUS, default=PENDING)
-    payment_status = models.CharField(max_length=255, choices=PAYMENTSTATUS)
+    payment_status = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self) -> str:
-        return f"Order {self.id} by {self.user.user} to {self.address.address}"
+        return f"Order {self.id} by {self.user.username} to {self.address.address}"
